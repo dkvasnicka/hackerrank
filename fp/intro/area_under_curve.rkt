@@ -3,7 +3,7 @@
 (require racket/match)
 
 (define [getf as bs]
-  (λ [x] (for/sum [[a as] [b bs]] (* a (expt x b)))))
+  (lambda [x] (for/sum [[a as] [b bs]] (* a (expt x b)))))
 
 (define [read-data]
   (map (compose (curry map string->number) 
@@ -15,7 +15,10 @@
              [(list L R) bounds]
              [f (getf as bs)]
              [n 0.001]]
-            (displayln
-              (for/sum [[x (in-range L R n)]]
-                       (* n (f x)))))
-
+            (for/fold [[area 0]
+                       [volume 0]]
+                      [[x (in-range L R n)]]
+              (let [[v (f x)]]
+               (values
+                 (+ area (* n v))
+                 (+ volume (* pi n (expt v 2)))))))
