@@ -1,12 +1,10 @@
-#lang typed/racket
+#lang typed/racket/base
 
 (require racket/flonum)
 
 (let [[size (* (cast (read) Integer) 
                (cast (read) Integer))]]
-       (let: loop : Float [[popped : Integer 0]
-                           [out : Float (->fl size)]]
+       (let: loop : Float [[popped : Integer 0]]
              (if (= popped size)
-               out
-               (loop (add1 popped)
-                     (+ out (/ popped (- size popped)))))))
+               (->fl size)
+               (+ (/ popped (- size popped)) (loop (add1 popped))))))

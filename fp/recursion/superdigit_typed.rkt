@@ -1,21 +1,21 @@
-#lang typed/racket
+#lang typed/racket/base
 
-(: digit-sum (Integer Integer -> Integer))
+(: digit-sum (Integer -> Integer))
 
-(define [digit-sum num out]
+(define [digit-sum num]
   (if (< num 10)
-    (+ out num)
+    num
     (let-values [[(q r) (quotient/remainder num 10)]]
-                (digit-sum q (+ out r)))))
+                (+ r (digit-sum q)))))
 
 (: super-digit (Integer -> Integer))
 
 (define [super-digit n]
   (if (< n 10)
     n
-    (super-digit (digit-sum n 0))))
+    (super-digit (digit-sum n))))
 
 (let* [[n (cast (read) Integer)]
        [k (cast (read) Integer)]
-       [init (* k (digit-sum n 0))]]
+       [init (* k (digit-sum n))]]
   (super-digit init))
