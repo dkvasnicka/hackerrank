@@ -1,26 +1,15 @@
 #lang racket
 
-(require racket/unsafe/ops)
-
-(define (intermediate-sums ary)
-  (let loop ([xs ary]
-             [i 0])
-    (if (null? xs)
-      empty-stream
-      (let ([v (unsafe-fx+ i (car xs))])
-        (stream-cons v (loop (cdr xs) v))))))
-
-(define (stream-max s)
-  (stream-fold unsafe-fxmax (stream-first s) (stream-rest s)))
-
 (define (max-subary-sum ary)
-  (inexact->exact
-    (let loop ([mx -inf.0]
-               [subary ary])
-      (if (null? subary)
-        mx
-        (loop (max mx (stream-max (intermediate-sums subary)))
-              (cdr subary))))))
+  (let loop ([mx -inf.0]
+             [sum 0]
+             [a ary])
+    (if (null? a)
+      mx
+      (let ([pmax (+ (car a) sum)])
+        (loop (if (> pmax mx) pmax mx)
+              (if (> pmax 0) pmax 0)
+              (cdr a))))))
 
 (define (max-nonctg-sum ary)
   (let-values 
@@ -30,8 +19,8 @@
                  [all-negative? #t])
                 ([i ary])
                 (values
-                  (unsafe-fxmax mx i)
-                  (if (positive? i) (unsafe-fx+ sum i) sum)
+                  (max mx i)
+                  (if (positive? i) (+ sum i) sum)
                   (and all-negative? (negative? i))))])
      (if all-negative? mx sum)))
 
