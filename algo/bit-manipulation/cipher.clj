@@ -1,9 +1,12 @@
 (require 'clojure.string)
 
 (defn phase1 [in out shift]
-  (reduce bit-xor 
-          (second in) 
-          (take-last (dec shift) out)))
+  (let [lastout (peek out)]
+    (bit-xor 
+      (first in) 
+      (second in)
+      lastout
+      lastout)))
 
 (defn phase2 [in out shift]
   (let [lastout (peek out)]
@@ -22,7 +25,7 @@
   (loop [out output
          counter (dec size)
          in input 
-         phase-fns (lazy-cat (repeat shift phase1) (repeat phase2))]
+         phase-fns (lazy-cat (repeat (dec shift) phase1) (repeat phase2))]
         (if (zero? counter)
           out
           (let [newbit ((first phase-fns) in out shift)]
