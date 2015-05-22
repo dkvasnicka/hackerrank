@@ -1,17 +1,8 @@
 (require 'clojure.string)
 
-(defn phase1 [in out shift]
+(defn compute-next [in out shift]
   (let [lastout (peek out)]
-    (bit-xor 
-      (first in) 
-      (second in)
-      lastout
-      lastout)))
-
-(defn phase2 [in out shift]
-  (let [lastout (peek out)]
-    (bit-xor lastout 
-             (nth out (- (count out) shift)) 
+    (bit-xor lastout               
              (first in) 
              lastout 
              (second in))))
@@ -20,18 +11,20 @@
       shift 4 ;(read)
      ; _ (read-line)
       input '(1 1 1 0 1 0 0 1 1 0) ;(map (comp #(Integer/parseInt %) str) (read-line))
-      output [(first input)]]
+      output [(first input)]
+      threshold (- size shift)]
   (print (first output))
   (loop [out output
          counter (dec size)
-         in input 
-         phase-fns (lazy-cat (repeat (dec shift) phase1) (repeat phase2))]
+         in input]
         (if (zero? counter)
           out
-          (let [newbit ((first phase-fns) in out shift)]
+          (let [nextbit (compute-next in out shift)
+                newbit (if (<= counter threshold) 
+                         (bit-xor nextbit (nth out (- (count out) shift))) 
+                         nextbit)]
             (print newbit)
             (recur 
               (conj out newbit)
               (dec counter)
-              (rest in)
-              (rest phase-fns))))))
+              (rest in))))))
