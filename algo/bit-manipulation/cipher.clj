@@ -18,17 +18,17 @@
      ; _ (read-line)
       input '(1 1 1 0 1 0 0 1 1 0) ;(map (comp #(Integer/parseInt %) str) (read-line))
       output [(first input)]]
-  (println
-    (clojure.string/join
-      (loop [out output
-             counter (dec size)
-             in input 
-             phase-fns (lazy-cat (repeat shift phase1) (repeat phase2))]
-            (if (zero? counter)
-              out
-              (recur 
-                (conj out 
-                      ((first phase-fns) in out shift))
-                (dec counter)
-                (rest in)
-                (rest phase-fns)))))))
+  (print (first output))
+  (loop [out output
+         counter (dec size)
+         in input 
+         phase-fns (lazy-cat (repeat shift phase1) (repeat phase2))]
+        (if (zero? counter)
+          out
+          (let [newbit ((first phase-fns) in out shift)]
+            (print newbit)
+            (recur 
+              (conj out newbit)
+              (dec counter)
+              (rest in)
+              (rest phase-fns))))))
