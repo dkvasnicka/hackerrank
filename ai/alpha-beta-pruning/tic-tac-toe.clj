@@ -1,3 +1,7 @@
+(ns solution 
+    (:use clojure.data)
+    (:gen-class))
+
 ;If player is X, I'm the first player.
 ;If player is O, I'm the second player.
 
@@ -38,11 +42,28 @@
   (some #(every? (partial = player) (map (partial nth board) %))
         vectors))
 
-(defn next-move [player board]
-  (let [moves (potential-states board board player)
-        some-win (some #(when (scores? player %) %) moves)]
-    some-win))
+(defn minimax [player board score scorefns]
+  (if (scores? player board)
+    score
+    (let [moves (potential-states board board (- player))]
+      (apply (first scorefns) 
+             (cons 0 (map #(minimax (- player) % (- score) (rest scorefns)) moves))))))
 
-(let [player (convert-to-numeric (first (read-line)))
-      board (mapv convert-to-numeric (read-board))]
-  (println (next-move player board)))
+(defn play [player board]
+  (let [moves (potential-states board board player)]
+    (apply max-key #(minimax player % 10 (flatten (repeat [min max]))) moves)))
+
+(defn coords [oldb newb]
+  (let [pos (dec (count (first (diff oldb newb))))
+        coo ((juxt quot rem) pos 3)]
+    (str (first coo) " " (second coo))))
+
+(defn -main []
+  (let [player (convert-to-numeric (first (read-line)))
+        board  (mapv convert-to-numeric (read-board))]
+    (println (coords board (play player board)))))
+
+(try (require 'leiningen.exec)
+     (when @(ns-resolve 'leiningen.exec '*running?*)
+       (apply -main (rest *command-line-args*)))
+     (catch java.io.FileNotFoundException e))
