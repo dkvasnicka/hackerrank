@@ -1,6 +1,4 @@
-(ns solution 
-    (:use clojure.data)
-    (:gen-class))
+(use 'clojure.data)
 
 ;If player is X, I'm the first player.
 ;If player is O, I'm the second player.
@@ -58,12 +56,6 @@
         coo ((juxt quot rem) pos 3)]
     (str (first coo) " " (second coo))))
 
-(defn -main []
-  (let [player (convert-to-numeric (first (read-line)))
-        board  (mapv convert-to-numeric (read-board))]
-    (println (coords board (play player board)))))
-
-(try (require 'leiningen.exec)
-     (when @(ns-resolve 'leiningen.exec '*running?*)
-       (apply -main (rest *command-line-args*)))
-     (catch java.io.FileNotFoundException e))
+(let [player (convert-to-numeric (first (read-line)))
+      board  (mapv convert-to-numeric (read-board))]
+  (println (coords board (play player board))))
