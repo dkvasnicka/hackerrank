@@ -1,18 +1,18 @@
 #lang racket
 
-(require unstable/sequence)
+(define ptscnt (read-line))
+(define data
+  (for/list ([l (in-lines)])
+    (map string->number 
+         (string-split 
+           (string-trim l)))))
 
-(define _ (read-line))
-(define data 
-  (sequence->stream 
-    (in-slice 2 (in-port))))
+(define (euclidean-dist p q)
+  (sqrt (+ (sqr (- (car p) (car q))) 
+           (sqr (- (cadr p) (cadr q))))))
 
-(let loop ([points (stream-append data (stream (stream-first data)))])
-  (if (stream-empty? (stream-rest points))
-    0
-    (let* ([tail (stream-rest points)]
-           [p (stream-first points)]
-           [q (stream-first tail)])
-      (+ (sqrt (+ (abs (- (car p) (car q))) 
-                  (abs (- (cadr p) (cadr q)))))
-         (loop tail)))))
+(let loop ([pts data])
+  (if (null? (cdr pts))
+    (euclidean-dist (car pts) (car data))
+    (+ (euclidean-dist (car pts) (cadr pts))
+       (loop (cdr pts)))))
