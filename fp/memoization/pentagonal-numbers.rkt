@@ -1,11 +1,17 @@
-#lang typed/racket
+#lang racket
 
 (define cnt (read))
 
-(for ([n (cast (in-port) (Sequenceof Integer))])
-     (displayln
-       (if (= n 1)
-         1
-         (+ (+ 5 (* 5 (- n 2)))
-            (for/sum : Integer ([x (in-range 0 (- n 2))])
-                               (+ 2 (* 3 x)))))))
+(define (pentagonal-stream i prev)
+  (let ([p (+ prev (* 2 i) (- i 2))])
+    (stream-cons (list i p) (pentagonal-stream (add1 i) p))))
+
+(define pentagonals
+  (stream-cons '(1 1) (pentagonal-stream 2 1)))
+
+(for ([n (in-port)]
+      [ps pentagonals])
+  (displayln 
+    (if (= n (car ps))
+      (cadr ps)
+      (cadr (stream-ref pentagonals (sub1 n))))))
