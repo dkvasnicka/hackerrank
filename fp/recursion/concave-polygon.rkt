@@ -1,40 +1,45 @@
 #lang racket
 
-(require math/array
-         math/matrix
-         2htdp/image
-         lang/posn)
+(struct pt (x y) #:transparent)
 
-;(define _ (read)) ; read away point count
+(define (line->pt l)
+  (apply pt (map string->number (string-split l))))
 
-(define (eof? mx)
-  (array-ormap eof-object? mx))
+(define (bottomleft? p1 p2) 
+  (or (< (pt-y p1) (pt-y p2))
+      (and (= (pt-y p1) (pt-y p2))
+           (< (pt-x p1) (pt-x p2)))))
 
-(define (point)
-  (let ([p (col-matrix [(read) (read)])])
-    (if (eof? p) start p)))
+(define (read-points)
+  (for/fold ([bl (line->pt (read-line))]
+             [pts '()])
+            ([nextpt (sequence-map line->pt (in-lines))])
+    (if (bottomleft? nextpt bl)
+      (values nextpt (cons bl pts))
+      (values bl (cons nextpt pts)))))
 
-(define start null
-  ;(point)
-  )
+(define (line-angle p q)
+  (atan (- (pt-y q) (pt-y p))
+        (- (pt-x q) (pt-x p))))
 
-(define (compute-angle x y z)
-  (matrix-angle (matrix- x y) (matrix- z y)))
+(define (z-coord p q r)
+  (- (* (- (pt-x q) (pt-x p))
+        (- (pt-y r) (pt-y p)))
+     (* (- (pt-y q) (pt-y p))
+        (- (pt-x r) (pt-x p)))))
 
-(define (traverse x y)
-  (if (matrix= y start)
-    "NO"
-    (let* ([z (point)]
-           [a (compute-angle x y z)])
-      (if (>= a pi)
-        "YES"
-        (traverse y z)))))
-
-;(displayln (traverse start (point)))
-
-(polygon
-  (for/list ([l (in-lines)])
-    (let ([coords (map string->number (string-split l))])
-      (make-posn (car coords) (cadr coords))))
-  'outline
-  "black")
+(define _ (read-line))
+(displayln
+  (let*-values ([(bottomleft points) (read-points)]
+                [(startingset) (sort points < #:key 
+                                     (curry line-angle 
+                                            bottomleft))]) 
+    (let loop ([candidates (cddr startingset)]
+               [stack (list (cadr startingset) 
+                            (car startingset) 
+                            bottomleft)])
+      (if (empty? candidates)
+        "NO"
+        (if (negative? (z-coord (cadr stack) (car stack) (car candidates)))
+          "YES"
+          (loop (cdr candidates) (cons (car candidates) stack)))))))
