@@ -1,27 +1,23 @@
-(set! *unchecked-math* true)
+(defn consume-stack [heights state idx v]
+  (loop [s (:stack state) mx 0]
+        (if (>= v (nth heights (first s)))
+          [s mx]
+          (let [[x & xs] s]
+            (recur xs
+                   (max mx (* (nth heights x)
+                              (- idx (first xs) 1))))))))
 
-(defn traverse-rest [^long car cdr]
-  (loop [min-height car
-         area       0
-         width      2
-         fence      cdr]
-        (if (empty? fence)
-          area
-          (let [^long m (min min-height (first fence))]
-            (recur m (max area (* width m)) (inc width) (rest fence))))))
+(defn reducer [heights state idx v]
+  (let [[newstack mx] (consume-stack heights state idx v)]
+    {:max   (max mx (:max state))
+     :stack (cons idx newstack)}))
 
-(defn find-area [fence]
-  (loop [f   fence
-         out 0]
-        (if (empty? f)
-          out
-          (let [rst (rest f)]
-            (recur rst 
-                   (max out 
-                        (traverse-rest 
-                          (first f) 
-                          rst)))))))
+(defn find-area [heights]
+  (:max
+    (reduce-kv (partial reducer heights) 
+               {:max 0 :stack '(0)} 
+               heights)))
 
-(let [len   (read)
-      fence (repeatedly len read)]
-  (time (println (find-area fence)))) ; 110768
+(let [len     (read)
+      heights (into [] (concat '(-1) (repeatedly len read) '(-1)))]
+  (println (find-area heights)))
