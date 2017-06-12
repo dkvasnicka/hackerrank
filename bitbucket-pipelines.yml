@@ -10,5 +10,5 @@ pipelines:
   default:
     - step:
         script:
-          - raco pkg install --auto compiler-lib typed-racket-lib
+          - raco pkg install --auto compiler-lib typed-racket-lib math-lib srfi-lib
           - find . -name "*.rkt" | xargs raco make -v
