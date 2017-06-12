@@ -11,4 +11,4 @@ pipelines:
   default:
     - step:
         script:
-          - raco make algo/greedy/jim-and-the-orders.rkt
+          - raco help
