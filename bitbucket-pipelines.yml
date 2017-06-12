@@ -5,10 +5,11 @@
 # You can specify a custom docker image from Docker Hub as your build environment.
 # image: atlassian/default-image:latest
 
-image: jackfirth/racket:6.8-onbuild
+image: jackfirth/racket:6.8
 
 pipelines:
   default:
     - step:
         script:
-          - raco make *.rkt
+          - raco pkg install --auto compiler-lib
+          - find . -name "*.rkt" | xargs raco make -v
