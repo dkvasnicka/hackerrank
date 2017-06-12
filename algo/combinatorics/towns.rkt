@@ -1,7 +1,5 @@
 #lang racket
 
-(require unstable/sequence)
-
 (let ([_ (read-line)])
   (for ([tc (in-slice 2 (in-lines))])
        (displayln

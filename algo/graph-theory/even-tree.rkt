@@ -1,7 +1,6 @@
 #lang racket
 
-(require unstable/sequence
-         math/array
+(require math/array
          srfi/43)
 
 (define (mark-edge G e re state)
