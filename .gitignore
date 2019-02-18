@@ -1,4 +1,5 @@
 .lein-repl-history
+tags
 .nrepl-port
 .lsp
 compiled
