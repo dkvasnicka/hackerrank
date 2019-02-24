@@ -1,10 +1,9 @@
 (require '[clojure.java.io :as io])
 
 (defn update-accumulator [acc x]
-  (cond
-    (empty? acc)             [x]
-    (<= (- x (first acc)) 1) (conj acc x)
-    :else                    [x]))
+  (if (<= ((fnil - nil Integer/MIN_VALUE) x (first acc)) 1)
+    (conj acc x)
+    [x]))
 
 (doseq [l (take-nth 2 (rest (line-seq (io/reader *in*))))]
   (let [nums (sort (map #(Integer/parseInt %) (clojure.string/split l #" ")))]
