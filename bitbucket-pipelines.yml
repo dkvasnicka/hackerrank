@@ -4,7 +4,7 @@
 # You can specify a custom docker image from Docker Hub as your build environment.
 # image: atlassian/default-image:latest
 
-image: jackfirth/racket:6.8
+image: jackfirth/racket:7.1
 
 pipelines:
   default:
