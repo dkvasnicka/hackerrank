@@ -20,20 +20,20 @@
       \_  0))
 
 (defn read-board []
-  (filter #(not= % \newline) 
+  (filter #(not= % \newline)
     (apply concat (take 3 (repeatedly read-line)))))
 
-; [0  0  0 
-;  0  0  0 
+; [0  0  0
+;  0  0  0
 ;  0 -1  1]
 (defn potential-states [board acc player]
   (let [next-idx (.indexOf acc 0)]
     (if (neg? next-idx)
       '()
-      (cons (assoc board next-idx player) 
-            (lazy-seq 
-              (potential-states board 
-                                (assoc acc next-idx player) 
+      (cons (assoc board next-idx player)
+            (lazy-seq
+              (potential-states board
+                                (assoc acc next-idx player)
                                 player))))))
 
 (defn scores? [player board]
@@ -44,7 +44,7 @@
   (if (scores? player board)
     score
     (let [moves (potential-states board board (- player))]
-      (apply (first scorefns) 
+      (apply (first scorefns)
              (cons 0 (map #(minimax (- player) % (- score) (rest scorefns)) moves))))))
 
 (defn play [player board]
